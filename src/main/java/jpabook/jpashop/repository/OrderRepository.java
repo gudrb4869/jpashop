@@ -102,4 +102,37 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class
         ).getResultList();
     }
+
+    /**
+     * distinct의 기능
+     * DB 쿼리에 distinct 삽입함.
+     * JPA에선 중복id 객체를 제거하고 컬렉션 객체로 반환.
+     * 일대다 페치조인하는 순간 페이징이 불가능하다는 치명적인 단점이 존재.
+     * 컬렉션 페치 조인은 1개만 사용가능.
+     */
+    public List<Order> findAllWithItems() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .setFirstResult(1)
+                .setMaxResults(100)
+                .getResultList();
+    }
+
+    /**
+     * ToOne 관계는 페치 조인으로 잡아주고
+     * hibernate의 default_batch_fetch_size 옵션을 활용하여 인쿼리를통해 최적화를 함.
+     */
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
