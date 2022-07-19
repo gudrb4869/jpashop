@@ -39,3 +39,6 @@ out/
 ### css, js ###
 /src/main/resources/static/css/
 /src/main/resources/static/js/
+
+### querydsl ###
+/src/main/generated/
